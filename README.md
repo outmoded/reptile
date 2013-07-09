@@ -8,4 +8,5 @@
 
 The following options are available when configuring _'reptile'_:
 
-- `port` - the port to use to connect to the REPL.  Defaults to port 8039.
+- `port` - the port to use to connect to the REPL.  Defaults to port 9000.
+- 'localOnly' - determines if only traffic from localhost is allowed to connect to the REPL.  Defaults to true.

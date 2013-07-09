@@ -28,7 +28,7 @@ describe('Reptile', function () {
 
             expect(err).to.not.exist;
 
-            var sock = Net.connect(8039);
+            var sock = Net.connect(9000);
             var state = 0;
 
             sock.on('readable', function () {
@@ -48,6 +48,35 @@ describe('Reptile', function () {
                 }
 
                 state++;
+            });
+        });
+    });
+
+    it('doesn\'t allow remote access by default', function (done) {
+
+        var server = new Hapi.Server();
+        server.pack.require('../', { port: 9001 }, function (err) {
+
+            expect(err).to.not.exist;
+
+            var address = Net.Socket.prototype.address;
+            Net.Socket.prototype.address = function () {
+
+                Net.Socket.prototype.address = address;
+                return {
+                    address: '192.168.0.1'
+                };
+            };
+            var sock = Net.connect(9001);
+
+            sock.once('close', function () {
+
+                done();
+            });
+
+            sock.on('readable', function () {
+
+                expect(sock.read()).to.not.exist;
             });
         });
     });
