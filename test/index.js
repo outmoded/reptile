@@ -21,33 +21,49 @@ var it = Lab.test;
 
 describe('Reptile', function () {
 
+    internals.port = function (callback) {
+
+        var server = Net.createServer();
+        server.listen(0, function () {
+
+            var port = server.address().port;
+            server.close(function () {
+
+                callback(port);
+            });
+        });
+    };
+
     it('creates a REPL that a client can connect to over TCP', function (done) {
 
         var server = new Hapi.Server();
-        server.pack.require('../', function (err) {
+        internals.port(function (port) {
 
-            expect(err).to.not.exist;
+            server.pack.require('../', { port: port }, function (err) {
 
-            var sock = Net.connect(9000);
-            var state = 0;
+                expect(err).to.not.exist;
 
-            sock.on('readable', function () {
+                var sock = Net.connect(port);
+                var state = 0;
 
-                var result = sock.read().toString('ascii');
+                sock.on('readable', function () {
 
-                if (state === 0) {
-                    expect(result.indexOf('>')).to.not.equal(-1);
-                    sock.write('pack.hapi\n');
-                }
-                else if (state === 1) {
-                    expect(result.indexOf('hapi')).to.equal(5);
-                    sock.write('.exit\n');
-                }
-                else if (state === 2) {
-                    done();
-                }
+                    var result = sock.read().toString('ascii');
 
-                state++;
+                    if (state === 0) {
+                        expect(result.indexOf('>')).to.not.equal(-1);
+                        sock.write('pack.hapi\n');
+                    }
+                    else if (state === 1) {
+                        expect(result.indexOf('hapi')).to.equal(5);
+                        sock.write('.exit\n');
+                    }
+                    else if (state === 2) {
+                        done();
+                    }
+
+                    state++;
+                });
             });
         });
     });
@@ -55,28 +71,31 @@ describe('Reptile', function () {
     it('doesn\'t allow remote access by default', function (done) {
 
         var server = new Hapi.Server();
-        server.pack.require('../', { port: 9001 }, function (err) {
+        internals.port(function (port) {
 
-            expect(err).to.not.exist;
+            server.pack.require('../', { port: port }, function (err) {
 
-            var address = Net.Socket.prototype.address;
-            Net.Socket.prototype.address = function () {
+                expect(err).to.not.exist;
 
-                Net.Socket.prototype.address = address;
-                return {
-                    address: '192.168.0.1'
+                var address = Net.Socket.prototype.address;
+                Net.Socket.prototype.address = function () {
+
+                    Net.Socket.prototype.address = address;
+                    return {
+                        address: '192.168.0.1'
+                    };
                 };
-            };
-            var sock = Net.connect(9001);
+                var sock = Net.connect(port);
 
-            sock.once('close', function () {
+                sock.once('close', function () {
 
-                done();
-            });
+                    done();
+                });
 
-            sock.on('readable', function () {
+                sock.on('readable', function () {
 
-                expect(sock.read()).to.not.exist;
+                    expect(sock.read()).to.not.exist;
+                });
             });
         });
     });
