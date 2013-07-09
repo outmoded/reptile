@@ -55,7 +55,6 @@ describe('Reptile', function () {
                         sock.write('pack.hapi\n');
                     }
                     else if (state === 1) {
-                        expect(result.indexOf('hapi')).to.equal(5);
                         sock.write('.exit\n');
                     }
                     else if (state === 2) {
