@@ -46,9 +46,14 @@ describe('Reptile', function () {
                 var sock = Net.connect(port);
                 var state = 0;
 
-                sock.on('readable', function () {
+                sock.on('readable', function (size) {
 
-                    var result = sock.read().toString('ascii');
+                    var buffer = sock.read();
+                    if (!buffer) {
+                        return;
+                    }
+
+                    var result = buffer.toString('ascii');
 
                     if (state === 0) {
                         expect(result.indexOf('>')).to.not.equal(-1);
@@ -67,7 +72,7 @@ describe('Reptile', function () {
         });
     });
 
-    it('doesn\'t allow remote access by default', function (done) {
+    it('does not allow remote access by default', function (done) {
 
         var server = new Hapi.Server();
         internals.port(function (port) {
