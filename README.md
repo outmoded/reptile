@@ -1,5 +1,6 @@
 <a href="https://github.com/spumko"><img src="https://raw.github.com/spumko/spumko/master/images/from.png" align="right" /></a>
-![reptile Logo](https://raw.github.com/spumko/reptile/master/images/reptile.png)
+
+# reptile
 
 [**hapi**](https://github.com/spumko/hapi) plugin for creating a REPL
 
