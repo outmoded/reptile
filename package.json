@@ -1,30 +1,27 @@
 {
   "name": "reptile",
   "description": "Plugin for creating a REPL",
-  "version": "1.0.1",
-  "author": "Eran Hammer <eran@hueniverse.com> (http://hueniverse.com)",
-  "contributors": [
-      "Wyatt Preul <wpreul@gmail.com> (http://jsgeek.com)"
-  ],
+  "version": "1.1.0",
   "repository": "git://github.com/spumko/reptile",
   "main": "index",
   "keywords": [
     "hapi",
     "repl",
-    "plugin"
+    "plugin",
+    "spumko"
   ],
   "engines": {
     "node": ">=0.10.22"
   },
   "dependencies": {
-    "hoek": "1.x.x"
+    "hoek": "2.x.x"
   },
   "peerDependencies": {
     "hapi": ">=2.x.x"
   },
   "devDependencies": {
-    "hapi": "3.x.x",
-    "lab": "1.x.x"
+    "hapi": "4.x.x",
+    "lab": "3.x.x"
   },
   "scripts": {
     "test": "make test-cov"

@@ -21,7 +21,7 @@ var it = Lab.test;
 
 describe('Reptile', function () {
 
-    internals.port = function (callback) {
+    internals.availablePort = function (callback) {
 
         var server = Net.createServer();
         server.listen(0, function () {
@@ -37,7 +37,7 @@ describe('Reptile', function () {
     it('creates a REPL that a client can connect to over TCP', function (done) {
 
         var server = new Hapi.Server();
-        internals.port(function (port) {
+        internals.availablePort(function (port) {
 
             server.pack.require('../', { port: port }, function (err) {
 
@@ -75,7 +75,7 @@ describe('Reptile', function () {
     it('does not allow remote access by default', function (done) {
 
         var server = new Hapi.Server();
-        internals.port(function (port) {
+        internals.availablePort(function (port) {
 
             server.pack.require('../', { port: port }, function (err) {
 
@@ -99,6 +99,53 @@ describe('Reptile', function () {
                 sock.on('readable', function () {
 
                     expect(sock.read()).to.not.exist;
+                });
+            });
+        });
+    });
+
+    it('does allow remote access when localOnly is false', function (done) {
+
+        var server = new Hapi.Server();
+        internals.availablePort(function (port) {
+
+            server.pack.require('../', { port: port, localOnly: false }, function (err) {
+
+                expect(err).to.not.exist;
+
+                var address = Net.Socket.prototype.address;
+                Net.Socket.prototype.address = function () {
+
+                    Net.Socket.prototype.address = address;
+                    return {
+                        address: '192.168.0.1'
+                    };
+                };
+
+                var sock = Net.connect(port);
+                var state = 0;
+
+                sock.on('readable', function (size) {
+
+                    var buffer = sock.read();
+                    if (!buffer) {
+                        return;
+                    }
+
+                    var result = buffer.toString('ascii');
+
+                    if (state === 0) {
+                        expect(result.indexOf('>')).to.not.equal(-1);
+                        sock.write('pack.hapi\n');
+                    }
+                    else if (state === 1) {
+                        sock.write('.exit\n');
+                    }
+                    else if (state === 2) {
+                        done();
+                    }
+
+                    state++;
                 });
             });
         });
