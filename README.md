@@ -6,6 +6,9 @@
 
 [![Build Status](https://secure.travis-ci.org/spumko/reptile.png)](http://travis-ci.org/spumko/reptile)
 
+[![NPM](https://nodei.co/npm/reptile.png?downloads=true&stars=true)](https://nodei.co/npm/reptile/)
+
+
 
 The following options are available when configuring _'reptile'_:
 
