@@ -43,10 +43,18 @@ describe('Reptile', function () {
 
                 expect(err).to.not.exist;
 
+                var address = Net.Socket.prototype.address;
+                Net.Socket.prototype.address = function () {
+
+                    Net.Socket.prototype.address = address;
+                    return {
+                        address: '127.0.0.1'
+                    };
+                };
                 var sock = Net.connect(port);
                 var state = 0;
 
-                sock.on('readable', function (size) {
+                sock.on('readable', function () {
 
                     var buffer = sock.read();
                     if (!buffer) {
