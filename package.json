@@ -1,7 +1,7 @@
 {
   "name": "reptile",
   "description": "Plugin for creating a REPL",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "repository": "git://github.com/spumko/reptile",
   "main": "index",
   "keywords": [
@@ -20,7 +20,7 @@
     "hapi": ">=2.x.x"
   },
   "devDependencies": {
-    "hapi": "4.x.x",
+    "hapi": "5.x.x",
     "lab": "3.x.x"
   },
   "scripts": {
