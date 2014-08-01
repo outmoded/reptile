@@ -8,11 +8,7 @@
 
 [![NPM](https://nodei.co/npm/reptile.png?downloads=true&stars=true)](https://nodei.co/npm/reptile/)
 
-| Lead Maintainer  |
-|:-:|
-|[wpreul](https://github.com/wpreul)|
-|![wpreul](https://secure.gravatar.com/avatar/be062e7594902e5f5dce0660867a8f60?s=128)|
-
+Lead Maintainer: [Wyatt Preul](https://github.com/wpreul)
 
 The following options are available when configuring _'reptile'_:
 
