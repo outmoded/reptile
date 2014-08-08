@@ -158,4 +158,58 @@ describe('Reptile', function () {
             });
         });
     });
+
+    it('allows the context of the repl to be customised', function(done){
+        var config = {
+            localOnly: false,
+            context: {
+              helloWorld: 'hola mundo'
+            }
+        }
+        var server = new Hapi.Server();
+        internals.availablePort(function (port) {
+            config.port = port;
+
+            server.pack.require('../', config, function (err) {
+
+                expect(err).to.not.exist;
+
+                var address = Net.Socket.prototype.address;
+                Net.Socket.prototype.address = function () {
+
+                    Net.Socket.prototype.address = address;
+                    return {
+                        address: '192.168.0.1'
+                    };
+                };
+
+                var sock = Net.connect(port);
+                var state = 0;
+
+                sock.on('readable', function (size) {
+
+                    var buffer = sock.read();
+                    if (!buffer) {
+                        return;
+                    }
+
+                    var result = buffer.toString('ascii');
+
+                    if (state === 0) {
+                        expect(result.indexOf('>')).to.not.equal(-1);
+                        sock.write('helloWorld\n');
+                    }
+                    else if (state === 1) {
+                        expect(result).to.contain('hola mundo')
+                        sock.write('.exit\n');
+                    }
+                    else if (state === 2) {
+                        done();
+                    }
+
+                    state++;
+                });
+            });
+        });
+    });
 });
