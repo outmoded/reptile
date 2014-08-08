@@ -184,7 +184,8 @@ describe('Reptile', function () {
                 };
 
                 var sock = Net.connect(port);
-                var state = 0;
+                var result = '';
+                var commandSent = false;
 
                 sock.on('readable', function (size) {
 
@@ -193,21 +194,17 @@ describe('Reptile', function () {
                         return;
                     }
 
-                    var result = buffer.toString('ascii');
+                    result += buffer.toString('ascii');
 
-                    if (state === 0) {
-                        expect(result.indexOf('>')).to.not.equal(-1);
+                    if (!commandSent) {
                         sock.write('helloWorld\n');
+                        commandSent = true;
                     }
-                    else if (state === 1) {
-                        expect(result).to.contain('hola mundo')
+
+                    if (result.indexOf('hola mundo') >= 0) {
                         sock.write('.exit\n');
-                    }
-                    else if (state === 2) {
                         done();
                     }
-
-                    state++;
                 });
             });
         });
