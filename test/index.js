@@ -3,6 +3,7 @@
 var Lab = require('lab');
 var Hapi = require('hapi');
 var Net = require('net');
+var Reptile = require('../');
 
 
 // Declare internals
@@ -12,11 +13,12 @@ var internals = {};
 
 // Test shortcuts
 
+var lab = exports.lab = Lab.script();
+var before = lab.before;
+var after = lab.after;
+var describe = lab.describe;
+var it = lab.it;
 var expect = Lab.expect;
-var before = Lab.before;
-var after = Lab.after;
-var describe = Lab.experiment;
-var it = Lab.test;
 
 
 describe('Reptile', function () {
@@ -39,7 +41,7 @@ describe('Reptile', function () {
         var server = new Hapi.Server();
         internals.availablePort(function (port) {
 
-            server.pack.require('../', { port: port }, function (err) {
+            server.pack.register({ plugin: Reptile, options: { port: port } }, function (err) {
 
                 expect(err).to.not.exist;
 
@@ -85,7 +87,7 @@ describe('Reptile', function () {
         var server = new Hapi.Server();
         internals.availablePort(function (port) {
 
-            server.pack.require('../', { port: port }, function (err) {
+            server.pack.register({ plugin: Reptile, options: { port: port } }, function (err) {
 
                 expect(err).to.not.exist;
 
@@ -117,7 +119,7 @@ describe('Reptile', function () {
         var server = new Hapi.Server();
         internals.availablePort(function (port) {
 
-            server.pack.require('../', { port: port, localOnly: false }, function (err) {
+            server.pack.register({ plugin: Reptile, options: { port: port, localOnly: false } }, function (err) {
 
                 expect(err).to.not.exist;
 
@@ -159,18 +161,21 @@ describe('Reptile', function () {
         });
     });
 
-    it('allows the context of the repl to be customised', function(done){
+    it('allows the context of the REPL to be customized', function (done) {
+
         var config = {
             localOnly: false,
             context: {
-              helloWorld: 'hola mundo'
+                helloWorld: 'hola mundo'
             }
-        }
+        };
+
         var server = new Hapi.Server();
         internals.availablePort(function (port) {
+
             config.port = port;
 
-            server.pack.require('../', config, function (err) {
+            server.pack.register({ plugin: Reptile, options: config }, function (err) {
 
                 expect(err).to.not.exist;
 
@@ -185,7 +190,7 @@ describe('Reptile', function () {
 
                 var sock = Net.connect(port);
                 var result = '';
-                var commandSent = false;
+                var state = 0;
 
                 sock.on('readable', function (size) {
 
@@ -196,15 +201,18 @@ describe('Reptile', function () {
 
                     result += buffer.toString('ascii');
 
-                    if (!commandSent) {
+                    if (state === 0) {
                         sock.write('helloWorld\n');
-                        commandSent = true;
                     }
-
-                    if (result.indexOf('hola mundo') >= 0) {
+                    else if (state === 1) {
                         sock.write('.exit\n');
+                    }
+                    else {
+                        expect(result).to.contain('hola mundo');
                         done();
                     }
+
+                    state++;
                 });
             });
         });
