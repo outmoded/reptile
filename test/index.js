@@ -3,6 +3,7 @@
 var Lab = require('lab');
 var Hapi = require('hapi');
 var Net = require('net');
+var Reptile = require('../');
 
 
 // Declare internals
@@ -12,11 +13,12 @@ var internals = {};
 
 // Test shortcuts
 
+var lab = exports.lab = Lab.script();
+var before = lab.before;
+var after = lab.after;
+var describe = lab.describe;
+var it = lab.it;
 var expect = Lab.expect;
-var before = Lab.before;
-var after = Lab.after;
-var describe = Lab.experiment;
-var it = Lab.test;
 
 
 describe('Reptile', function () {
@@ -39,7 +41,7 @@ describe('Reptile', function () {
         var server = new Hapi.Server();
         internals.availablePort(function (port) {
 
-            server.pack.require('../', { port: port }, function (err) {
+            server.pack.register({ plugin: Reptile, options: { port: port } }, function (err) {
 
                 expect(err).to.not.exist;
 
@@ -85,7 +87,7 @@ describe('Reptile', function () {
         var server = new Hapi.Server();
         internals.availablePort(function (port) {
 
-            server.pack.require('../', { port: port }, function (err) {
+            server.pack.register({ plugin: Reptile, options: { port: port } }, function (err) {
 
                 expect(err).to.not.exist;
 
@@ -117,7 +119,7 @@ describe('Reptile', function () {
         var server = new Hapi.Server();
         internals.availablePort(function (port) {
 
-            server.pack.require('../', { port: port, localOnly: false }, function (err) {
+            server.pack.register({ plugin: Reptile, options: { port: port, localOnly: false } }, function (err) {
 
                 expect(err).to.not.exist;
 
@@ -173,7 +175,7 @@ describe('Reptile', function () {
 
             config.port = port;
 
-            server.pack.require('../', config, function (err) {
+            server.pack.register({ plugin: Reptile, options: config }, function (err) {
 
                 expect(err).to.not.exist;
 
