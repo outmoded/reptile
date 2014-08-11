@@ -159,15 +159,18 @@ describe('Reptile', function () {
         });
     });
 
-    it('allows the context of the repl to be customised', function(done){
+    it('allows the context of the REPL to be customized', function (done) {
+
         var config = {
             localOnly: false,
             context: {
-              helloWorld: 'hola mundo'
+                helloWorld: 'hola mundo'
             }
-        }
+        };
+
         var server = new Hapi.Server();
         internals.availablePort(function (port) {
+
             config.port = port;
 
             server.pack.require('../', config, function (err) {
@@ -200,8 +203,8 @@ describe('Reptile', function () {
                         sock.write('helloWorld\n');
                         commandSent = true;
                     }
-
-                    if (result.indexOf('hola mundo') >= 0) {
+                    else {
+                        expect(result.indexOf('hola mundo')).to.not.equal(-1);
                         sock.write('.exit\n');
                         done();
                     }
