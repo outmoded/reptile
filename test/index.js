@@ -190,7 +190,7 @@ describe('Reptile', function () {
 
                 var sock = Net.connect(port);
                 var result = '';
-                var commandSent = false;
+                var state = 0;
 
                 sock.on('readable', function (size) {
 
@@ -201,15 +201,18 @@ describe('Reptile', function () {
 
                     result += buffer.toString('ascii');
 
-                    if (!commandSent) {
+                    if (state === 0) {
                         sock.write('helloWorld\n');
-                        commandSent = true;
+                    }
+                    else if (state === 1) {
+                        sock.write('.exit\n');
                     }
                     else {
-                        expect(result.indexOf('hola mundo')).to.not.equal(-1);
-                        sock.write('.exit\n');
+                        expect(result).to.contain('hola mundo');
                         done();
                     }
+
+                    state++;
                 });
             });
         });
