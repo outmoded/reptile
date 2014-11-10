@@ -1,7 +1,8 @@
 // Load modules
 
-var Lab = require('lab');
+var Code = require('code');
 var Hapi = require('hapi');
+var Lab = require('lab');
 var Net = require('net');
 var Reptile = require('../');
 
@@ -15,7 +16,7 @@ var internals = {};
 
 var lab = exports.lab = Lab.script();
 var it = lab.it;
-var expect = Lab.expect;
+var expect = Code.expect;
 
 
 internals.availablePort = function (callback) {
@@ -38,7 +39,7 @@ it('creates a REPL that a client can connect to over TCP', function (done) {
 
         server.pack.register({ plugin: Reptile, options: { port: port } }, function (err) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
 
             var address = Net.Socket.prototype.address;
             Net.Socket.prototype.address = function () {
@@ -84,7 +85,7 @@ it('does not allow remote access by default', function (done) {
 
         server.pack.register({ plugin: Reptile, options: { port: port } }, function (err) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
 
             var address = Net.Socket.prototype.address;
             Net.Socket.prototype.address = function () {
@@ -103,7 +104,7 @@ it('does not allow remote access by default', function (done) {
 
             sock.on('readable', function () {
 
-                expect(sock.read()).to.not.exist;
+                expect(sock.read()).to.not.exist();
             });
         });
     });
@@ -116,7 +117,7 @@ it('does allow remote access when localOnly is false', function (done) {
 
         server.pack.register({ plugin: Reptile, options: { port: port, localOnly: false } }, function (err) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
 
             var address = Net.Socket.prototype.address;
             Net.Socket.prototype.address = function () {
@@ -172,7 +173,7 @@ it('allows the context of the REPL to be customized', function (done) {
 
         server.pack.register({ plugin: Reptile, options: config }, function (err) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
 
             var address = Net.Socket.prototype.address;
             Net.Socket.prototype.address = function () {
