@@ -6,7 +6,7 @@
 
 [![NPM](https://nodei.co/npm/reptile.png?downloads=true&stars=true)](https://nodei.co/npm/reptile/)
 
-Lead Maintainer: [Wyatt Preul](https://github.com/wpreul)
+Lead Maintainer: [Wyatt Preul](https://github.com/geek)
 
 The following options are available when configuring _'reptile'_:
 
