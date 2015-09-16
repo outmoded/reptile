@@ -37,7 +37,7 @@ it('creates a REPL that a client can connect to over TCP', function (done) {
     var server = new Hapi.Server();
     internals.availablePort(function (port) {
 
-        server.pack.register({ plugin: Reptile, options: { port: port } }, function (err) {
+        server.register({ register: Reptile, options: { port: port } }, function (err) {
 
             expect(err).to.not.exist();
 
@@ -83,7 +83,7 @@ it('does not allow remote access by default', function (done) {
     var server = new Hapi.Server();
     internals.availablePort(function (port) {
 
-        server.pack.register({ plugin: Reptile, options: { port: port } }, function (err) {
+        server.register({ register: Reptile, options: { port: port } }, function (err) {
 
             expect(err).to.not.exist();
 
@@ -115,7 +115,7 @@ it('does allow remote access when localOnly is false', function (done) {
     var server = new Hapi.Server();
     internals.availablePort(function (port) {
 
-        server.pack.register({ plugin: Reptile, options: { port: port, localOnly: false } }, function (err) {
+        server.register({ register: Reptile, options: { port: port, localOnly: false } }, function (err) {
 
             expect(err).to.not.exist();
 
@@ -171,7 +171,7 @@ it('allows the context of the REPL to be customized', function (done) {
 
         config.port = port;
 
-        server.pack.register({ plugin: Reptile, options: config }, function (err) {
+        server.register({ register: Reptile, options: config }, function (err) {
 
             expect(err).to.not.exist();
 
@@ -196,7 +196,6 @@ it('allows the context of the REPL to be customized', function (done) {
                 }
 
                 result += buffer.toString('ascii');
-
                 if (state === 0) {
                     sock.write('helloWorld\n');
                 }
