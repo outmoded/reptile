@@ -3,7 +3,7 @@
   "description": "Plugin for creating a REPL",
   "version": "1.2.1",
   "repository": "git://github.com/spumko/reptile",
-  "main": "index",
+  "main": "lib/index.js",
   "keywords": [
     "hapi",
     "repl",
@@ -25,7 +25,8 @@
     "lab": "5.x.x"
   },
   "scripts": {
-    "test": "make test-cov"
+    "test": "lab -r console -t 100 -a code -L",
+    "test-cov-html": "lab -r html -o coverage.html -a code -L"
   },
   "licenses": [
     {
