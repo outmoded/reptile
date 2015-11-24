@@ -2,7 +2,7 @@ var Hapi = require('hapi');
 var Reptile = require('../');
 
 var server = new Hapi.Server();
-server.connection({ port: 8080 })
+server.connection({ port: 8080 });
 server.register(Reptile, function (err) {
 
     if (err) {

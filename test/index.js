@@ -64,7 +64,7 @@ it('creates a REPL that a client can connect to over TCP IPv4', function (done) 
 
                 if (state === 0) {
                     expect(result.indexOf('>')).to.not.equal(-1);
-                    sock.write('pack.hapi\n');
+                    sock.write('server.hapi\n');
                 }
                 else if (state === 1) {
                     sock.write('.exit\n');
