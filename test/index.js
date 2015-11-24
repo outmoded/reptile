@@ -347,3 +347,58 @@ it('allows the context of the REPL to be customized', (done) => {
         });
     });
 });
+
+it('allows the use of extra repl start options', (done) => {
+
+    const config = {
+        replOptions: {
+            prompt: 'neat> '
+        }
+    };
+
+    const server = new Hapi.Server();
+    internals.availablePort((port) => {
+
+        config.port = port;
+
+        server.register({ register: Reptile, options: config }, (err) => {
+
+            expect(err).to.not.exist();
+
+            const address = Net.Socket.prototype.address;
+            Net.Socket.prototype.address = function () {
+
+                Net.Socket.prototype.address = address;
+                return {
+                    family: 'IPv4',
+                    address: '127.0.0.1'
+                };
+            };
+            const sock = Net.connect(port);
+            let state = 0;
+
+            sock.on('readable', () => {
+
+                const buffer = sock.read();
+                if (!buffer) {
+                    return;
+                }
+
+                const result = buffer.toString('ascii');
+
+                if (state === 0) {
+                    expect(result.indexOf('neat>')).to.not.equal(-1);
+                    sock.write('pack.hapi\n');
+                }
+                else if (state === 1) {
+                    sock.write('.exit\n');
+                }
+                else if (state === 2) {
+                    done();
+                }
+
+                state++;
+            });
+        });
+    });
+});

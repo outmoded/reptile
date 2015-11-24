@@ -13,3 +13,4 @@ The following options are available when configuring _'reptile'_:
 - `port` - the port to use to connect to the REPL.  Defaults to port 9000.
 - `localOnly` - determines if only traffic from localhost is allowed to connect to the REPL.  Defaults to true.
 - `context` - an object whose properties will be added to the REPL context
+- `replOptions` - an object whose properties will be passed along to `Repl.start`
