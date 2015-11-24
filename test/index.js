@@ -339,6 +339,7 @@ it('allows the context of the REPL to be customized', (done) => {
                 else {
                     expect(result).to.contain('hola mundo');
                     done();
+                    done = function () {};
                 }
 
                 state++;
