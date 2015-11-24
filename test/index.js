@@ -1,47 +1,49 @@
+'use strict';
+
 // Load modules
 
-var Code = require('code');
-var Hapi = require('hapi');
-var Lab = require('lab');
-var Net = require('net');
-var Reptile = require('../');
+const Code = require('code');
+const Hapi = require('hapi');
+const Lab = require('lab');
+const Net = require('net');
+const Reptile = require('../');
 
 
 // Declare internals
 
-var internals = {};
+const internals = {};
 
 
 // Test shortcuts
 
-var lab = exports.lab = Lab.script();
-var it = lab.it;
-var expect = Code.expect;
+const lab = exports.lab = Lab.script();
+const it = lab.it;
+const expect = Code.expect;
 
 
 internals.availablePort = function (callback) {
 
-    var server = Net.createServer();
-    server.listen(0, function () {
+    const server = Net.createServer();
+    server.listen(0, () => {
 
-        var port = server.address().port;
-        server.close(function () {
+        const port = server.address().port;
+        server.close(() => {
 
             callback(port);
         });
     });
 };
 
-it('creates a REPL that a client can connect to over TCP IPv4', function (done) {
+it('creates a REPL that a client can connect to over TCP IPv4', (done) => {
 
-    var server = new Hapi.Server();
-    internals.availablePort(function (port) {
+    const server = new Hapi.Server();
+    internals.availablePort((port) => {
 
-        server.register({ register: Reptile, options: { port: port } }, function (err) {
+        server.register({ register: Reptile, options: { port: port } }, (err) => {
 
             expect(err).to.not.exist();
 
-            var address = Net.Socket.prototype.address;
+            const address = Net.Socket.prototype.address;
             Net.Socket.prototype.address = function () {
 
                 Net.Socket.prototype.address = address;
@@ -50,21 +52,21 @@ it('creates a REPL that a client can connect to over TCP IPv4', function (done) 
                     address: '127.0.0.1'
                 };
             };
-            var sock = Net.connect(port);
-            var state = 0;
+            const sock = Net.connect(port);
+            let state = 0;
 
-            sock.on('readable', function () {
+            sock.on('readable', () => {
 
-                var buffer = sock.read();
+                const buffer = sock.read();
                 if (!buffer) {
                     return;
                 }
 
-                var result = buffer.toString('ascii');
+                const result = buffer.toString('ascii');
 
                 if (state === 0) {
                     expect(result.indexOf('>')).to.not.equal(-1);
-                    sock.write('pack.hapi\n');
+                    sock.write('server.hapi\n');
                 }
                 else if (state === 1) {
                     sock.write('.exit\n');
@@ -79,16 +81,16 @@ it('creates a REPL that a client can connect to over TCP IPv4', function (done) 
     });
 });
 
-it('creates a REPL that a client can connect to over TCP IPv6', function (done) {
+it('creates a REPL that a client can connect to over TCP IPv6', (done) => {
 
-    var server = new Hapi.Server();
-    internals.availablePort(function (port) {
+    const server = new Hapi.Server();
+    internals.availablePort((port) => {
 
-        server.register({ register: Reptile, options: { port: port } }, function (err) {
+        server.register({ register: Reptile, options: { port: port } }, (err) => {
 
             expect(err).to.not.exist();
 
-            var address = Net.Socket.prototype.address;
+            const address = Net.Socket.prototype.address;
             Net.Socket.prototype.address = function () {
 
                 Net.Socket.prototype.address = address;
@@ -97,17 +99,17 @@ it('creates a REPL that a client can connect to over TCP IPv6', function (done) 
                     address: '::1'
                 };
             };
-            var sock = Net.connect(port);
-            var state = 0;
+            const sock = Net.connect(port);
+            let state = 0;
 
-            sock.on('readable', function () {
+            sock.on('readable', () => {
 
-                var buffer = sock.read();
+                const buffer = sock.read();
                 if (!buffer) {
                     return;
                 }
 
-                var result = buffer.toString('ascii');
+                const result = buffer.toString('ascii');
 
                 if (state === 0) {
                     expect(result.indexOf('>')).to.not.equal(-1);
@@ -126,16 +128,16 @@ it('creates a REPL that a client can connect to over TCP IPv6', function (done) 
     });
 });
 
-it('does not allow remote access by default IPv4', function (done) {
+it('does not allow remote access by default IPv4', (done) => {
 
-    var server = new Hapi.Server();
-    internals.availablePort(function (port) {
+    const server = new Hapi.Server();
+    internals.availablePort((port) => {
 
-        server.register({ register: Reptile, options: { port: port } }, function (err) {
+        server.register({ register: Reptile, options: { port: port } }, (err) => {
 
             expect(err).to.not.exist();
 
-            var address = Net.Socket.prototype.address;
+            const address = Net.Socket.prototype.address;
             Net.Socket.prototype.address = function () {
 
                 Net.Socket.prototype.address = address;
@@ -144,14 +146,14 @@ it('does not allow remote access by default IPv4', function (done) {
                     address: '192.168.0.1'
                 };
             };
-            var sock = Net.connect(port);
+            const sock = Net.connect(port);
 
-            sock.once('close', function () {
+            sock.once('close', () => {
 
                 done();
             });
 
-            sock.on('readable', function () {
+            sock.on('readable', () => {
 
                 expect(sock.read()).to.not.exist();
             });
@@ -159,16 +161,16 @@ it('does not allow remote access by default IPv4', function (done) {
     });
 });
 
-it('does not allow remote access by default IPv6', function (done) {
+it('does not allow remote access by default IPv6', (done) => {
 
-    var server = new Hapi.Server();
-    internals.availablePort(function (port) {
+    const server = new Hapi.Server();
+    internals.availablePort((port) => {
 
-        server.register({ register: Reptile, options: { port: port } }, function (err) {
+        server.register({ register: Reptile, options: { port: port } }, (err) => {
 
             expect(err).to.not.exist();
 
-            var address = Net.Socket.prototype.address;
+            const address = Net.Socket.prototype.address;
             Net.Socket.prototype.address = function () {
 
                 Net.Socket.prototype.address = address;
@@ -177,14 +179,14 @@ it('does not allow remote access by default IPv6', function (done) {
                     address: '3ffe:1900:4545:3:200:f8ff:fe21:67cf'
                 };
             };
-            var sock = Net.connect(port);
+            const sock = Net.connect(port);
 
-            sock.once('close', function () {
+            sock.once('close', () => {
 
                 done();
             });
 
-            sock.on('readable', function () {
+            sock.on('readable', () => {
 
                 expect(sock.read()).to.not.exist();
             });
@@ -192,16 +194,16 @@ it('does not allow remote access by default IPv6', function (done) {
     });
 });
 
-it('does allow remote access when localOnly is false IPv4', function (done) {
+it('does allow remote access when localOnly is false IPv4', (done) => {
 
-    var server = new Hapi.Server();
-    internals.availablePort(function (port) {
+    const server = new Hapi.Server();
+    internals.availablePort((port) => {
 
-        server.register({ register: Reptile, options: { port: port, localOnly: false } }, function (err) {
+        server.register({ register: Reptile, options: { port: port, localOnly: false } }, (err) => {
 
             expect(err).to.not.exist();
 
-            var address = Net.Socket.prototype.address;
+            const address = Net.Socket.prototype.address;
             Net.Socket.prototype.address = function () {
 
                 Net.Socket.prototype.address = address;
@@ -211,17 +213,17 @@ it('does allow remote access when localOnly is false IPv4', function (done) {
                 };
             };
 
-            var sock = Net.connect(port);
-            var state = 0;
+            const sock = Net.connect(port);
+            let state = 0;
 
-            sock.on('readable', function (size) {
+            sock.on('readable', (size) => {
 
-                var buffer = sock.read();
+                const buffer = sock.read();
                 if (!buffer) {
                     return;
                 }
 
-                var result = buffer.toString('ascii');
+                const result = buffer.toString('ascii');
 
                 if (state === 0) {
                     expect(result.indexOf('>')).to.not.equal(-1);
@@ -240,16 +242,16 @@ it('does allow remote access when localOnly is false IPv4', function (done) {
     });
 });
 
-it('does allow remote access when localOnly is false IPv6', function (done) {
+it('does allow remote access when localOnly is false IPv6', (done) => {
 
-    var server = new Hapi.Server();
-    internals.availablePort(function (port) {
+    const server = new Hapi.Server();
+    internals.availablePort((port) => {
 
-        server.register({ register: Reptile, options: { port: port, localOnly: false } }, function (err) {
+        server.register({ register: Reptile, options: { port: port, localOnly: false } }, (err) => {
 
             expect(err).to.not.exist();
 
-            var address = Net.Socket.prototype.address;
+            const address = Net.Socket.prototype.address;
             Net.Socket.prototype.address = function () {
 
                 Net.Socket.prototype.address = address;
@@ -259,17 +261,17 @@ it('does allow remote access when localOnly is false IPv6', function (done) {
                 };
             };
 
-            var sock = Net.connect(port);
-            var state = 0;
+            const sock = Net.connect(port);
+            let state = 0;
 
-            sock.on('readable', function (size) {
+            sock.on('readable', (size) => {
 
-                var buffer = sock.read();
+                const buffer = sock.read();
                 if (!buffer) {
                     return;
                 }
 
-                var result = buffer.toString('ascii');
+                const result = buffer.toString('ascii');
 
                 if (state === 0) {
                     expect(result.indexOf('>')).to.not.equal(-1);
@@ -288,25 +290,25 @@ it('does allow remote access when localOnly is false IPv6', function (done) {
     });
 });
 
-it('allows the context of the REPL to be customized', function (done) {
+it('allows the context of the REPL to be customized', (done) => {
 
-    var config = {
+    const config = {
         localOnly: false,
         context: {
             helloWorld: 'hola mundo'
         }
     };
 
-    var server = new Hapi.Server();
-    internals.availablePort(function (port) {
+    const server = new Hapi.Server();
+    internals.availablePort((port) => {
 
         config.port = port;
 
-        server.register({ register: Reptile, options: config }, function (err) {
+        server.register({ register: Reptile, options: config }, (err) => {
 
             expect(err).to.not.exist();
 
-            var address = Net.Socket.prototype.address;
+            const address = Net.Socket.prototype.address;
             Net.Socket.prototype.address = function () {
 
                 Net.Socket.prototype.address = address;
@@ -316,13 +318,13 @@ it('allows the context of the REPL to be customized', function (done) {
                 };
             };
 
-            var sock = Net.connect(port);
-            var result = '';
-            var state = 0;
+            const sock = Net.connect(port);
+            let result = '';
+            let state = 0;
 
-            sock.on('readable', function (size) {
+            sock.on('readable', (size) => {
 
-                var buffer = sock.read();
+                const buffer = sock.read();
                 if (!buffer) {
                     return;
                 }
@@ -337,6 +339,7 @@ it('allows the context of the REPL to be customized', function (done) {
                 else {
                     expect(result).to.contain('hola mundo');
                     done();
+                    done = function () {};
                 }
 
                 state++;

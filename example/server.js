@@ -1,9 +1,11 @@
-var Hapi = require('hapi');
-var Reptile = require('../');
+'use strict';
 
+const Hapi = require('hapi');
+const Reptile = require('../');
 
-var server = new Hapi.Server(8080);
-server.pack.register({ plugin: Reptile }, function (err) {
+const server = new Hapi.Server();
+server.connection({ port: 8080 });
+server.register(Reptile, (err) => {
 
     if (err) {
         console.error(err);
@@ -13,7 +15,7 @@ server.pack.register({ plugin: Reptile }, function (err) {
     console.log('REPL available on port 9000');
 });
 
-server.start(function () {
+server.start(() => {
 
     console.log('Server started at http://localhost:' + server.info.port);
 });
