@@ -1,9 +1,9 @@
 var Hapi = require('hapi');
 var Reptile = require('../');
 
-
-var server = new Hapi.Server(8080);
-server.pack.register({ plugin: Reptile }, function (err) {
+var server = new Hapi.Server();
+server.connection({ port: 8080 })
+server.register(Reptile, function (err) {
 
     if (err) {
         console.error(err);
