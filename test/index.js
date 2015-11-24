@@ -32,7 +32,7 @@ internals.availablePort = function (callback) {
     });
 };
 
-it('creates a REPL that a client can connect to over TCP', function (done) {
+it('creates a REPL that a client can connect to over TCP IPv4', function (done) {
 
     var server = new Hapi.Server();
     internals.availablePort(function (port) {
@@ -46,6 +46,7 @@ it('creates a REPL that a client can connect to over TCP', function (done) {
 
                 Net.Socket.prototype.address = address;
                 return {
+                    family: 'IPv4',
                     address: '127.0.0.1'
                 };
             };
@@ -78,7 +79,7 @@ it('creates a REPL that a client can connect to over TCP', function (done) {
     });
 });
 
-it('does not allow remote access by default', function (done) {
+it('creates a REPL that a client can connect to over TCP IPv6', function (done) {
 
     var server = new Hapi.Server();
     internals.availablePort(function (port) {
@@ -92,6 +93,54 @@ it('does not allow remote access by default', function (done) {
 
                 Net.Socket.prototype.address = address;
                 return {
+                    family: 'IPv6',
+                    address: '::1'
+                };
+            };
+            var sock = Net.connect(port);
+            var state = 0;
+
+            sock.on('readable', function () {
+
+                var buffer = sock.read();
+                if (!buffer) {
+                    return;
+                }
+
+                var result = buffer.toString('ascii');
+
+                if (state === 0) {
+                    expect(result.indexOf('>')).to.not.equal(-1);
+                    sock.write('pack.hapi\n');
+                }
+                else if (state === 1) {
+                    sock.write('.exit\n');
+                }
+                else if (state === 2) {
+                    done();
+                }
+
+                state++;
+            });
+        });
+    });
+});
+
+it('does not allow remote access by default IPv4', function (done) {
+
+    var server = new Hapi.Server();
+    internals.availablePort(function (port) {
+
+        server.register({ register: Reptile, options: { port: port } }, function (err) {
+
+            expect(err).to.not.exist();
+
+            var address = Net.Socket.prototype.address;
+            Net.Socket.prototype.address = function () {
+
+                Net.Socket.prototype.address = address;
+                return {
+                    family: 'IPv4',
                     address: '192.168.0.1'
                 };
             };
@@ -110,7 +159,40 @@ it('does not allow remote access by default', function (done) {
     });
 });
 
-it('does allow remote access when localOnly is false', function (done) {
+it('does not allow remote access by default IPv6', function (done) {
+
+    var server = new Hapi.Server();
+    internals.availablePort(function (port) {
+
+        server.register({ register: Reptile, options: { port: port } }, function (err) {
+
+            expect(err).to.not.exist();
+
+            var address = Net.Socket.prototype.address;
+            Net.Socket.prototype.address = function () {
+
+                Net.Socket.prototype.address = address;
+                return {
+                    family: 'IPv6',
+                    address: '3ffe:1900:4545:3:200:f8ff:fe21:67cf'
+                };
+            };
+            var sock = Net.connect(port);
+
+            sock.once('close', function () {
+
+                done();
+            });
+
+            sock.on('readable', function () {
+
+                expect(sock.read()).to.not.exist();
+            });
+        });
+    });
+});
+
+it('does allow remote access when localOnly is false IPv4', function (done) {
 
     var server = new Hapi.Server();
     internals.availablePort(function (port) {
@@ -124,7 +206,56 @@ it('does allow remote access when localOnly is false', function (done) {
 
                 Net.Socket.prototype.address = address;
                 return {
+                    family: 'IPv4',
                     address: '192.168.0.1'
+                };
+            };
+
+            var sock = Net.connect(port);
+            var state = 0;
+
+            sock.on('readable', function (size) {
+
+                var buffer = sock.read();
+                if (!buffer) {
+                    return;
+                }
+
+                var result = buffer.toString('ascii');
+
+                if (state === 0) {
+                    expect(result.indexOf('>')).to.not.equal(-1);
+                    sock.write('pack.hapi\n');
+                }
+                else if (state === 1) {
+                    sock.write('.exit\n');
+                }
+                else if (state === 2) {
+                    done();
+                }
+
+                state++;
+            });
+        });
+    });
+});
+
+it('does allow remote access when localOnly is false IPv6', function (done) {
+
+    var server = new Hapi.Server();
+    internals.availablePort(function (port) {
+
+        server.register({ register: Reptile, options: { port: port, localOnly: false } }, function (err) {
+
+            expect(err).to.not.exist();
+
+            var address = Net.Socket.prototype.address;
+            Net.Socket.prototype.address = function () {
+
+                Net.Socket.prototype.address = address;
+                return {
+                    family: 'IPv6',
+                    address: '3ffe:1900:4545:3:200:f8ff:fe21:67cf'
                 };
             };
 
@@ -180,6 +311,7 @@ it('allows the context of the REPL to be customized', function (done) {
 
                 Net.Socket.prototype.address = address;
                 return {
+                    family: 'IPv4',
                     address: '192.168.0.1'
                 };
             };
