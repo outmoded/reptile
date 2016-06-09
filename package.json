@@ -16,7 +16,7 @@
     "hoek": "4.x.x"
   },
   "peerDependencies": {
-    "hapi": "13.x.x"
+    "hapi": ">=11.x.x"
   },
   "devDependencies": {
     "code": "3.x.x",
