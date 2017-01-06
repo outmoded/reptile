@@ -128,6 +128,53 @@ it('creates a REPL that a client can connect to over TCP IPv6', (done) => {
     });
 });
 
+it('creates a REPL that a client can connect to over TCP IPv6 with format ::ffff:127.0.0.1', (done) => {
+
+    const server = new Hapi.Server();
+    internals.availablePort((port) => {
+
+        server.register({ register: Reptile, options: { port: port } }, (err) => {
+
+            expect(err).to.not.exist();
+
+            const address = Net.Socket.prototype.address;
+            Net.Socket.prototype.address = function () {
+
+                Net.Socket.prototype.address = address;
+                return {
+                    family: 'IPv6',
+                    address: '::ffff:127.0.0.1'
+                };
+            };
+            const sock = Net.connect(port);
+            let state = 0;
+
+            sock.on('readable', () => {
+
+                const buffer = sock.read();
+                if (!buffer) {
+                    return;
+                }
+
+                const result = buffer.toString('ascii');
+
+                if (state === 0) {
+                    expect(result.indexOf('>')).to.not.equal(-1);
+                    sock.write('pack.hapi\n');
+                }
+                else if (state === 1) {
+                    sock.write('.exit\n');
+                }
+                else if (state === 2) {
+                    done();
+                }
+
+                state++;
+            });
+        });
+    });
+});
+
 it('does not allow remote access by default IPv4', (done) => {
 
     const server = new Hapi.Server();
