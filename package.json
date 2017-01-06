@@ -1,7 +1,7 @@
 {
   "name": "reptile",
   "description": "Plugin for creating a REPL",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "repository": "git://github.com/spumko/reptile",
   "main": "lib/index.js",
   "keywords": [
