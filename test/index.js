@@ -55,6 +55,7 @@ it('creates a REPL that a client can connect to over TCP IPv4', async () => {
             address: '127.0.0.1'
         };
     };
+
     const sock = Net.connect(port);
     let state = 0;
 
@@ -101,6 +102,7 @@ it('creates a REPL that a client can connect to over TCP IPv6', async () => {
             address: '::1'
         };
     };
+
     const sock = Net.connect(port);
     let state = 0;
 
@@ -147,6 +149,7 @@ it('creates a REPL that a client can connect to over TCP IPv6 with format ::ffff
             address: '::ffff:127.0.0.1'
         };
     };
+
     const sock = Net.connect(port);
     let state = 0;
 
@@ -193,6 +196,7 @@ it('does not allow remote access by default IPv4', async () => {
             address: '192.168.0.1'
         };
     };
+
     const sock = Net.connect(port);
 
     sock.once('close', () => {
@@ -225,6 +229,7 @@ it('does not allow remote access by default IPv6', async () => {
             address: '3ffe:1900:4545:3:200:f8ff:fe21:67cf'
         };
     };
+
     const sock = Net.connect(port);
 
     sock.once('close', () => {
@@ -415,6 +420,7 @@ it('allows the use of extra repl start options', async () => {
             address: '127.0.0.1'
         };
     };
+
     const sock = Net.connect(port);
     let state = 0;
 
@@ -461,6 +467,7 @@ it('closes all connections when the server is stopped', async () => {
             address: '127.0.0.1'
         };
     };
+
     const sock = Net.connect(port);
     let state = 0;
 
