@@ -443,3 +443,45 @@ it('allows the use of extra repl start options', async () => {
 
     return barrier;
 });
+
+it('closes all connections when the server is stopped', async () => {
+
+    const barrier = new Barrier();
+    const server = Hapi.server();
+    const port = await internals.availablePort();
+
+    await server.register({ plugin: Reptile, options: { port } });
+
+    const address = Net.Socket.prototype.address;
+    Net.Socket.prototype.address = function () {
+
+        Net.Socket.prototype.address = address;
+        return {
+            family: 'IPv4',
+            address: '127.0.0.1'
+        };
+    };
+    const sock = Net.connect(port);
+    let state = 0;
+
+    sock.once('close', () => {
+
+        barrier.pass();
+    });
+
+    sock.on('readable', () => {
+
+        const buffer = sock.read();
+        if (!buffer) {
+            return;
+        }
+
+        if (state === 0) {
+            server.stop();
+        }
+
+        state++;
+    });
+
+    return barrier;
+});
